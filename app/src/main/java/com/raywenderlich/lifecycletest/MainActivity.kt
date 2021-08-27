@@ -3,16 +3,57 @@ package com.raywenderlich.lifecycletest
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.viewModels
+import com.raywenderlich.lifecycletest.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+
+    private var viewBinding: ActivityMainBinding? = null
+    private var count: Int = 0
+    private val viewModel: MainViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        viewBinding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(viewBinding?.root)
         Log.e ("Activity Main", "onCreate")
+
         //first;
         //Called when the activity is first created
 
-        supportFragmentManager.beginTransaction().add(R.id.fragment, FragmentTest()).commit()
+        if(supportFragmentManager.fragments.isEmpty()) {
+            supportFragmentManager.beginTransaction().add(R.id.fragment, FragmentTest()).commit()
+        }
+
+//        viewBinding?.increment?.setOnClickListener{
+//            increment()
+//        }
+//
+//        viewBinding?.decrement?.setOnClickListener{
+//            decrement()
+//        }
+//
+//        if(savedInstanceState != null){
+//            count = savedInstanceState.getInt("count")
+//            //viewBinding?.valueText?.text = count.toString()
+//        }
+    }
+
+//    override fun onSaveInstanceState(outState: Bundle) {
+//        super.onSaveInstanceState(outState)
+//        outState.putInt("count", count)
+//        Log.e("Activity Main", "onSaveInstanceState")
+//
+//    }
+
+    //the onRestoreInstanceState() is not mandatory because we have a savedInstanceState Bundle in onCreate() method too and we can directly use it there
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        if(savedInstanceState != null){
+            count = savedInstanceState.getInt("count")
+            //viewBinding?.valueText?.text = count.toString()
+        }
+        Log.e("Activity Main", "onRestoreInstanceState")
     }
 
     override fun onDestroy() {
@@ -56,5 +97,16 @@ class MainActivity : AppCompatActivity() {
         Log.e ("Activity Main", "onRestart")
         //Called when the activity has been stopped and is restarting again
     }
+
+//    private fun increment(){
+//        count++
+//        viewBinding?.valueText?.text = count.toString()
+//    }
+//
+//
+//    private fun decrement(){
+//        count--
+//        viewBinding?.valueText?.text = count.toString()
+//    }
 
 }

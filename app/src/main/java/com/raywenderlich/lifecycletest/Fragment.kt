@@ -6,12 +6,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import com.raywenderlich.lifecycletest.databinding.TestFragmentLayoutBinding
 
 class FragmentTest : Fragment() {
+
+    private var viewBinding: TestFragmentLayoutBinding? = null
+    private val viewModel: FragmentViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.e ("Fragment Test", "onCreate")
-
     }
 
     override fun onCreateView(
@@ -21,9 +26,8 @@ class FragmentTest : Fragment() {
     ): View? {
         Log.e ("Fragment Test", "onCreateView")
 
-        val view = inflater.inflate(R.layout.test_fragment_layout, container, false)
-
-        return view
+        viewBinding = TestFragmentLayoutBinding.inflate(layoutInflater, container, false)
+        return viewBinding?.root
 
     }
 
@@ -37,8 +41,19 @@ class FragmentTest : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         Log.e ("Fragment Test", "onViewCreated")
 
-    }
+        viewBinding?.valueText?.text = viewModel.getCount().toString()
 
+        viewBinding?.increment?.setOnClickListener{
+            //increment()
+            requireActivity().supportFragmentManager.beginTransaction().replace(R.id.fragment, SecondFragment()).addToBackStack(null).commit()
+        }
+
+        viewBinding?.decrement?.setOnClickListener{
+            viewModel.decrement(){
+                viewBinding?.valueText?.text = it.toString()
+            }
+        }
+    }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -69,5 +84,7 @@ class FragmentTest : Fragment() {
         Log.e ("Fragment Test", "onPause")
         //partly visible; user cannot interact
     }
+
+
 
 }
